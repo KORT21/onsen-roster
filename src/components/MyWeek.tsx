@@ -4,21 +4,28 @@ import { assignmentsFor, findSupervisorSplit, roleMeta, todayIso } from '../lib/
 import type { RosterWeek } from '../types/roster'
 
 const floaters = [
-  { left: 8, drift: 28, sway: -12, delay: 90, duration: 3500, size: 27, rotate: -14 },
-  { left: 17, drift: -24, sway: 18, delay: 460, duration: 3900, size: 38, rotate: 12 },
-  { left: 27, drift: 38, sway: -14, delay: 180, duration: 3250, size: 22, rotate: -8 },
-  { left: 36, drift: -30, sway: 22, delay: 630, duration: 4100, size: 32, rotate: 15 },
-  { left: 44, drift: 24, sway: -20, delay: 20, duration: 3750, size: 45, rotate: -10 },
-  { left: 51, drift: -18, sway: 16, delay: 310, duration: 3300, size: 25, rotate: 9 },
-  { left: 58, drift: 34, sway: -18, delay: 720, duration: 4200, size: 34, rotate: -16 },
-  { left: 65, drift: -38, sway: 24, delay: 150, duration: 3600, size: 29, rotate: 13 },
-  { left: 73, drift: 26, sway: -15, delay: 520, duration: 3950, size: 42, rotate: -11 },
-  { left: 83, drift: -28, sway: 19, delay: 250, duration: 3400, size: 23, rotate: 14 },
-  { left: 91, drift: -34, sway: 14, delay: 780, duration: 4050, size: 31, rotate: -12 },
-  { left: 23, drift: 32, sway: -22, delay: 920, duration: 3500, size: 19, rotate: 8 },
-  { left: 48, drift: -25, sway: 20, delay: 1050, duration: 3900, size: 28, rotate: -14 },
-  { left: 77, drift: 30, sway: -16, delay: 980, duration: 3650, size: 20, rotate: 11 },
-  { left: 57, drift: 16, sway: -13, delay: 1180, duration: 3350, size: 18, rotate: -9 },
+  { left: 10, drift: 30, sway: -13, delay: 0, duration: 3000, size: 27, rotate: -14 },
+  { left: 47, drift: -22, sway: 18, delay: 65, duration: 3900, size: 39, rotate: 12 },
+  { left: 76, drift: 34, sway: -15, delay: 130, duration: 3350, size: 22, rotate: -8 },
+  { left: 25, drift: -28, sway: 22, delay: 200, duration: 4300, size: 32, rotate: 15 },
+  { left: 61, drift: 25, sway: -21, delay: 270, duration: 3200, size: 44, rotate: -10 },
+  { left: 86, drift: -20, sway: 16, delay: 340, duration: 3800, size: 25, rotate: 9 },
+  { left: 16, drift: 33, sway: -18, delay: 410, duration: 4550, size: 35, rotate: -16 },
+  { left: 54, drift: -36, sway: 24, delay: 480, duration: 2900, size: 29, rotate: 13 },
+  { left: 80, drift: 27, sway: -16, delay: 550, duration: 4100, size: 41, rotate: -11 },
+  { left: 35, drift: -27, sway: 19, delay: 620, duration: 3450, size: 23, rotate: 14 },
+  { left: 67, drift: -32, sway: 14, delay: 690, duration: 4400, size: 31, rotate: -12 },
+  { left: 8, drift: 31, sway: -22, delay: 760, duration: 3100, size: 20, rotate: 8 },
+  { left: 43, drift: -24, sway: 20, delay: 830, duration: 4000, size: 28, rotate: -14 },
+  { left: 73, drift: 29, sway: -16, delay: 900, duration: 3300, size: 21, rotate: 11 },
+  { left: 90, drift: -25, sway: 17, delay: 970, duration: 4600, size: 34, rotate: -10 },
+  { left: 20, drift: 35, sway: -19, delay: 1040, duration: 3600, size: 25, rotate: 13 },
+  { left: 58, drift: -30, sway: 21, delay: 1110, duration: 3050, size: 37, rotate: -15 },
+  { left: 82, drift: 24, sway: -14, delay: 1180, duration: 4200, size: 19, rotate: 9 },
+  { left: 31, drift: -26, sway: 18, delay: 1250, duration: 3500, size: 30, rotate: -12 },
+  { left: 70, drift: 32, sway: -20, delay: 1320, duration: 4500, size: 24, rotate: 14 },
+  { left: 12, drift: -18, sway: 15, delay: 1390, duration: 3150, size: 36, rotate: -9 },
+  { left: 49, drift: 28, sway: -17, delay: 1460, duration: 3850, size: 22, rotate: 12 },
 ] as const
 
 type FloaterStyle = CSSProperties & {
@@ -48,7 +55,7 @@ export function MyWeek({ week, selectedName, onChooseName, onOpenDay }: MyWeekPr
 
   useEffect(() => {
     if (celebration === null) return
-    const timeout = window.setTimeout(() => setCelebration((current) => current === celebration ? null : current), 5500)
+    const timeout = window.setTimeout(() => setCelebration((current) => current === celebration ? null : current), 6400)
     return () => window.clearTimeout(timeout)
   }, [celebration])
 
@@ -82,7 +89,7 @@ export function MyWeek({ week, selectedName, onChooseName, onOpenDay }: MyWeekPr
             {selectedName}
             {hasGift && (
               <button className="profile-gift" type="button" aria-label="Send some love" onClick={() => setCelebration(Date.now())}>
-                <span aria-hidden="true">💗</span>
+                <span aria-hidden="true">💖</span>
               </button>
             )}
           </h2>

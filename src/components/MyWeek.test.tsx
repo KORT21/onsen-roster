@@ -15,6 +15,7 @@ describe('MyWeek', () => {
 
     const heart = screen.getByRole('button', { name: 'Send some love' })
     expect(heart).toBeInTheDocument()
+    expect(heart).toHaveTextContent('💖')
 
     fireEvent.click(heart)
 
