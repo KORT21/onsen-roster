@@ -22,6 +22,7 @@ export function MyWeek({ week, selectedName, onChooseName, onOpenDay }: MyWeekPr
 
   const split = findSupervisorSplit(week)
   const assignments = assignmentsFor(week, selectedName)
+  const isPip = selectedName.trim().toLocaleLowerCase() === 'pip'
   const byDay = new Map<string, typeof assignments>()
   assignments.forEach((assignment) => {
     const current = byDay.get(assignment.day.date) ?? []
@@ -34,7 +35,14 @@ export function MyWeek({ week, selectedName, onChooseName, onOpenDay }: MyWeekPr
       <div className="section-heading">
         <div>
           <span className="eyebrow">Your week</span>
-          <h2>{selectedName}</h2>
+          <h2 className="my-week-name">
+            {selectedName}
+            {isPip && (
+              <svg className="pip-heart" viewBox="0 0 24 24" role="img" aria-label="Love for Pip">
+                <path d="M12 20.4S4 15.35 4 9.45A4.35 4.35 0 0 1 12 7a4.35 4.35 0 0 1 8 2.45c0 5.9-8 10.95-8 10.95Z" />
+              </svg>
+            )}
+          </h2>
         </div>
         <span className="count-pill">{assignments.length} shift{assignments.length === 1 ? '' : 's'}</span>
       </div>
