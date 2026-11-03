@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { findSupervisorSplit, isoWeekNumber, namesInCell, parseAssignment, peopleIn } from './roster'
+import { findSupervisorSplit, formatDayNotes, isoWeekNumber, namesInCell, parseAssignment, peopleIn } from './roster'
 import { demoPayload } from '../data/demo'
 
 describe('roster helpers', () => {
@@ -26,6 +26,16 @@ describe('roster helpers', () => {
 
   it('uses the second supervisor row as the afternoon boundary', () => {
     expect(findSupervisorSplit(demoPayload.weeks[0])).toBe(6)
+  })
+
+  it('keeps note descriptions and their times together on one line', () => {
+    expect(formatDayNotes(['Mia RC Train Stella', '2–3.30pm-'])).toEqual([
+      'Mia RC Train Stella 🕒 2–3.30pm',
+    ])
+    expect(formatDayNotes(['Res Meeting', '2.30–3.30pm', 'Amy* 2.30pm start'])).toEqual([
+      'Res Meeting 🕒 2.30–3.30pm',
+      'Amy* 🕒 2.30pm start',
+    ])
   })
 
   it('derives a unique, sorted list of people', () => {

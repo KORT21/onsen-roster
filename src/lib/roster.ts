@@ -13,6 +13,36 @@ const FAMILY_STYLES: Array<{ test: RegExp; family: string; color: string }> = [
 ]
 
 const PLACEHOLDER_RE = /^(to fill|tbc|vacant|no driver needed|spa side|not needed)$/i
+const NOTE_TIME_RE = /\b(?:\d{1,2}(?:[:.]\d{1,2})?\s*(?:am|pm)?\s*[–—-]\s*)?\d{1,2}(?:[:.]\d{1,2})?\s*(?:am|pm)\b/i
+
+export function formatDayNotes(values: string[]): string[] {
+  const notes: string[] = []
+
+  values.forEach((value) => {
+    const clean = value.replace(/\s+/g, ' ').replace(/\s*[–—-]\s*$/, '').trim()
+    if (!clean) return
+
+    const time = clean.match(NOTE_TIME_RE)
+    if (!time || time.index === undefined) {
+      notes.push(clean)
+      return
+    }
+
+    const before = clean.slice(0, time.index).trim()
+    const after = clean.slice(time.index + time[0].length).trim()
+    const isTimeContinuation = !before && /^(?:start|finish|until\s+close|close)?$/i.test(after)
+    const previous = notes.at(-1)
+
+    if (isTimeContinuation && previous && !NOTE_TIME_RE.test(previous)) {
+      notes[notes.length - 1] = `${previous} 🕒 ${clean}`
+      return
+    }
+
+    notes.push(before ? `${before} 🕒 ${clean.slice(time.index)}` : `🕒 ${clean}`)
+  })
+
+  return notes
+}
 
 export function parseAssignment(value: string): PersonAssignment | null {
   const raw = value.trim()

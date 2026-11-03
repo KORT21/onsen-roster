@@ -98,6 +98,8 @@ h2 { font-size: 30px; }
 .segment button { border: 0; border-radius: 9px; padding: 10px; color: var(--muted); background: transparent; font-weight: 700; font-size: 12px; cursor: pointer; }
 .segment button.active { color: var(--cream); background: var(--surface-2); box-shadow: 0 6px 15px rgba(0,0,0,.2); }
 .day-notes { display: grid; gap: 6px; margin: -12px 0 22px; padding: 12px 14px; border: 1px solid rgba(212,164,95,.28); border-radius: 12px; background: rgba(212,164,95,.07); color: #dfc391; font-size: 11px; }
+.day-notes > div { white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
+.day-notes > div::-webkit-scrollbar { display: none; }
 .roster-heading { margin-bottom: 18px; }
 .role-groups { display: grid; gap: 18px; }
 .role-group > header { display: flex; align-items: center; gap: 8px; margin: 0 4px 8px; color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
