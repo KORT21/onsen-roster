@@ -1,4 +1,4 @@
-import { findSupervisorSplit, formatDayNotes, hasRosteredPerson, namesInCell, parseAssignment, roleMeta } from '../lib/roster'
+import { deriveDayNotes, findSupervisorSplit, hasRosteredPerson, namesInCell, parseAssignment, roleMeta } from '../lib/roster'
 import type { RosterWeek } from '../types/roster'
 
 interface FullRosterProps {
@@ -24,9 +24,7 @@ export function FullRoster({ week, dayIndex, half, selectedName, onDayChange, on
     groups.get(meta.family)?.entries.push({ id: row.id, title: meta.title, time: meta.time, value })
   })
 
-  const notes = formatDayNotes(week.rows
-    .filter((row) => row.kind === 'note' && row.cells[dayIndex])
-    .map((row) => row.cells[dayIndex]))
+  const notes = deriveDayNotes(week, dayIndex)
 
   return (
     <section>
@@ -46,7 +44,7 @@ export function FullRoster({ week, dayIndex, half, selectedName, onDayChange, on
 
       {notes.length > 0 && (
         <div className="day-notes">
-          {notes.map((note, index) => <div key={`${note}-${index}`}>● {note}</div>)}
+          {notes.map((note, index) => <div className={note.includes('🕒') ? 'inline-time' : ''} key={`${note}-${index}`}>● {note}</div>)}
         </div>
       )}
 

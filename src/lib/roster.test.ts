@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { findSupervisorSplit, formatDayNotes, hasRosteredPerson, isoWeekNumber, namesInCell, parseAssignment, peopleIn } from './roster'
+import { deriveDayNotes, findSupervisorSplit, formatDayNotes, hasRosteredPerson, isoWeekNumber, namesInCell, parseAssignment, peopleIn } from './roster'
+import type { RosterWeek } from '../types/roster'
 import { demoPayload } from '../data/demo'
 
 describe('roster helpers', () => {
@@ -44,6 +45,28 @@ describe('roster helpers', () => {
     expect(formatDayNotes(['Res Meeting', '2.30–3.30pm', 'Amy* 2.30pm start'])).toEqual([
       'Res Meeting 🕒 2.30–3.30pm',
       'Amy* 🕒 2.30pm start',
+    ])
+  })
+
+  it('derives trainer relationships and farewell notes from assignments', () => {
+    const week: RosterWeek = {
+      id: 'training-notes',
+      label: 'Training notes',
+      start: '2026-10-26',
+      days: [{ date: '2026-10-27', shortLabel: 'Tue' }],
+      rows: [
+        { id: 'fd-training', kind: 'role', label: 'Front Desk Training 8.00am', cells: ['Jocelyn*'] },
+        { id: 'fd', kind: 'role', label: 'FRONT DESK 1 8.00am', cells: ['Sara*'] },
+        { id: 'driver-training', kind: 'role', label: 'Driver Training 7.00am', cells: ['Mia*'] },
+        { id: 'driver', kind: 'role', label: 'EARLY DRIVER 7.00am', cells: ['Conor*'] },
+        { id: 'farewell', kind: 'role', label: 'FRONT DESK 2 8.30am', cells: ['Carlos last day :('] },
+      ],
+    }
+
+    expect(deriveDayNotes(week, 0)).toEqual([
+      'Carlos’s last day — don’t forget to say your goodbyes. We love you, Carlos! 💛',
+      'Sara is training Jocelyn on Front Desk.',
+      'Conor is training Mia on Driver.',
     ])
   })
 

@@ -44,6 +44,64 @@ export function formatDayNotes(values: string[]): string[] {
   return notes
 }
 
+function trainingArea(label: string) {
+  if (/front desk/i.test(label)) return { key: 'front-desk', label: 'Front Desk' }
+  if (/driver/i.test(label)) return { key: 'driver', label: 'Driver' }
+  if (/spa host|spa attendant|\bspa\b/i.test(label)) return { key: 'spa', label: 'Spa' }
+  if (/runner/i.test(label)) return { key: 'runner', label: 'Runners' }
+  if (/supervisor/i.test(label)) return { key: 'supervisor', label: 'Supervisor' }
+  if (/timer|comms|ressies/i.test(label)) return { key: 'comms', label: 'Comms' }
+
+  const clean = label.replace(/\btraining\b/gi, '').replace(/\s+\d.*$/, '').trim()
+  return { key: clean.toLocaleLowerCase(), label: clean || 'this role' }
+}
+
+function namesList(names: string[]) {
+  if (names.length < 2) return names[0] ?? ''
+  if (names.length === 2) return `${names[0]} and ${names[1]}`
+  return `${names.slice(0, -1).join(', ')}, and ${names.at(-1)}`
+}
+
+export function deriveDayNotes(week: RosterWeek, dayIndex: number): string[] {
+  const explicitNotes = formatDayNotes(week.rows
+    .filter((row) => row.kind === 'note' && row.cells[dayIndex])
+    .map((row) => row.cells[dayIndex]))
+  const farewells: string[] = []
+  const trainees = new Map<string, { label: string; names: string[] }>()
+  const trainers = new Map<string, string[]>()
+
+  week.rows.forEach((row) => {
+    if (row.kind === 'note') return
+    const assignment = parseAssignment(row.cells[dayIndex] ?? '')
+    if (!assignment?.name || assignment.placeholder) return
+
+    if (/\blast day\b/i.test(assignment.note)) {
+      farewells.push(`${assignment.name}’s last day — don’t forget to say your goodbyes. We love you, ${assignment.name}! 💛`)
+    }
+
+    const area = trainingArea(row.label)
+    if (/\btraining\b/i.test(row.label)) {
+      const group = trainees.get(area.key) ?? { label: area.label, names: [] }
+      if (!group.names.includes(assignment.name)) group.names.push(assignment.name)
+      trainees.set(area.key, group)
+    } else if (assignment.training) {
+      const names = trainers.get(area.key) ?? []
+      if (!names.includes(assignment.name)) names.push(assignment.name)
+      trainers.set(area.key, names)
+    }
+  })
+
+  const trainingNotes = [...trainees.entries()].map(([key, group]) => {
+    const trainerNames = trainers.get(key) ?? []
+    if (trainerNames.length === 0) {
+      return `${namesList(group.names)} ${group.names.length === 1 ? 'is' : 'are'} training on ${group.label}.`
+    }
+    return `${namesList(trainerNames)} ${trainerNames.length === 1 ? 'is' : 'are'} training ${namesList(group.names)} on ${group.label}.`
+  })
+
+  return [...new Set([...farewells, ...trainingNotes, ...explicitNotes])]
+}
+
 export function parseAssignment(value: string): PersonAssignment | null {
   const raw = value.trim()
   if (!raw) return null
