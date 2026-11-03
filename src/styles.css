@@ -29,10 +29,12 @@ button { color: inherit; }
 .brand-name { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; padding-bottom: 1px; }
 .brand-wordmark { width: 92px; height: auto; display: block; fill: var(--cream); }
 .brand small { color: var(--gold); font-size: 8px; font-weight: 700; letter-spacing: .28em; line-height: 1; }
-.status-pill { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line); border-radius: 99px; padding: 7px 10px; color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+.status-pill { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line); border-radius: 99px; padding: 7px 10px; color: var(--muted); font-size: 10px; font-weight: 700; white-space: nowrap; }
 .status-pill i { width: 7px; height: 7px; border-radius: 50%; background: #7f98a3; }
-.status-pill.live i { background: #71c79c; box-shadow: 0 0 12px rgba(113,199,156,.7); }
-.status-pill.cache i { background: #e0b466; }
+.status-pill.warning { color: #d9bd87; border-color: rgba(224,180,102,.3); }
+.status-pill.warning i { background: #e0a94f; box-shadow: 0 0 10px rgba(224,169,79,.4); }
+.status-pill.offline { color: #dc9d9d; border-color: rgba(211,99,99,.32); }
+.status-pill.offline i { background: #d36363; box-shadow: 0 0 10px rgba(211,99,99,.4); }
 
 .content { padding: 18px 18px 30px; }
 .week-bar { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 8px; margin: 0 0 28px; border: 1px solid var(--line); border-radius: 16px; background: rgba(13, 32, 42, 0.76); box-shadow: var(--shadow); overflow: hidden; }
@@ -48,21 +50,20 @@ button { color: inherit; }
 h1, h2 { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; margin: 0; letter-spacing: -.025em; }
 h1 { font-size: clamp(38px, 8vw, 54px); line-height: .96; }
 h2 { font-size: 30px; }
-.my-week-name { display: inline-flex; align-items: center; gap: 8px; }
-.pip-heart-button { width: 1.12em; height: 1.12em; min-width: 38px; min-height: 38px; margin: -.12em 0 -.12em -.1em; padding: 0; border: 0; border-radius: 50%; display: inline-grid; place-items: center; background: transparent; color: #df929e; font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.pip-heart-button svg { width: .78em; height: .78em; fill: currentColor; filter: drop-shadow(0 0 7px rgba(223,146,158,.32)); transition: transform .18s ease, filter .18s ease; }
-.pip-heart-button:hover svg { transform: scale(1.08); filter: drop-shadow(0 0 10px rgba(223,146,158,.48)); }
-.pip-heart-button:active svg { transform: scale(.86); }
-.pip-heart-button:focus-visible { outline: 2px solid rgba(223,146,158,.7); outline-offset: 1px; }
-.pip-heart-burst { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 80; }
-.pip-heart-particle { position: absolute; left: var(--origin-x); top: var(--origin-y); width: var(--heart-size); height: var(--heart-size); color: #df929e; fill: currentColor; opacity: 0; filter: drop-shadow(0 2px 5px rgba(223,146,158,.28)); animation: pip-heart-fly 1.65s cubic-bezier(.16,.78,.24,1) var(--heart-delay) both; }
-.pip-heart-particle.tone-1 { color: #efc0c5; }
-.pip-heart-particle.tone-2 { color: #d8a55d; }
-@keyframes pip-heart-fly {
-  0% { opacity: 0; transform: translate(-50%, -50%) rotate(0deg) scale(.2); }
-  12% { opacity: 1; }
-  72% { opacity: .95; }
-  100% { opacity: 0; transform: translate(calc(-50% + var(--heart-dx)), calc(-50% + var(--heart-dy))) rotate(var(--heart-rotate)) scale(1); }
+.my-week-name { display: inline-flex; align-items: center; gap: 0; }
+.profile-gift { width: .96em; height: 1.06em; min-width: 34px; min-height: 38px; margin: -.1em 0 -.1em -.13em; padding: 0; border: 0; display: inline-grid; place-items: center; background: transparent; font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.profile-gift span { display: block; font: .82em/1 Apple Color Emoji, Segoe UI Emoji, sans-serif; filter: drop-shadow(0 2px 5px rgba(236,63,138,.18)); transition: transform .18s ease; }
+.profile-gift:hover span { transform: scale(1.08); }
+.profile-gift:active span { transform: scale(.84); }
+.profile-gift:focus-visible { outline: 2px solid rgba(236,90,151,.7); outline-offset: -3px; border-radius: 50%; }
+.celebration-layer { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 80; }
+.celebration-floater { position: absolute; left: var(--float-left); bottom: -60px; width: var(--float-size); height: var(--float-size); display: grid; place-items: center; opacity: 0; font: var(--float-size)/1 Apple Color Emoji, Segoe UI Emoji, sans-serif; filter: drop-shadow(0 4px 8px rgba(205,36,110,.2)); will-change: transform, opacity; animation: heart-balloon var(--float-duration) cubic-bezier(.22,.65,.3,1) var(--float-delay) both; }
+@keyframes heart-balloon {
+  0% { opacity: 0; transform: translate3d(0, 45px, 0) rotate(0deg) scale(.4); }
+  8% { opacity: 1; }
+  48% { opacity: 1; transform: translate3d(var(--float-sway), -48dvh, 0) rotate(calc(var(--float-rotate) * -.45)) scale(1.04); }
+  85% { opacity: .98; }
+  100% { opacity: 0; transform: translate3d(var(--float-drift), calc(-100dvh - 90px), 0) rotate(var(--float-rotate)) scale(.9); }
 }
 .count-pill { color: var(--muted); border: 1px solid var(--line); border-radius: 99px; padding: 6px 10px; font-size: 11px; }
 
@@ -118,6 +119,10 @@ h2 { font-size: 30px; }
 .settings-card > p { color: var(--muted); font-size: 12px; line-height: 1.5; }
 .settings-card input { width: 100%; border: 1px solid var(--line); border-radius: 11px; padding: 12px 13px; color: var(--cream); background: rgba(0,0,0,.16); outline: none; }
 .settings-card input:focus { border-color: var(--gold); }
+.sync-message { margin: -4px 0 16px; padding: 11px 12px; border: 1px solid rgba(224,180,102,.3); border-radius: 10px; background: rgba(224,180,102,.07); color: #d9bd87; font-size: 11px; line-height: 1.5; }
+.sync-message strong { color: #e2c78f; }
+.sync-message.offline { border-color: rgba(211,99,99,.3); background: rgba(211,99,99,.06); color: #d9a1a1; }
+.sync-message.offline strong { color: #e1aaaa; }
 .name-list { max-height: 320px; overflow: auto; margin-top: 10px; }
 .name-list button { width: 100%; display: grid; grid-template-columns: 36px 1fr auto; align-items: center; gap: 11px; border: 0; border-bottom: 1px solid var(--line); padding: 9px 2px; background: transparent; text-align: left; cursor: pointer; }
 .name-list button:last-child { border-bottom: 0; }

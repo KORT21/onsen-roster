@@ -6,6 +6,7 @@ import { NavIcon } from './components/NavIcon'
 import { WeekBar } from './components/WeekBar'
 import { loadRoster, type LoadedRoster } from './lib/api'
 import { closestWeekIndex, peopleIn, todayIso } from './lib/roster'
+import { relativeRosterAge, syncIndicator, type SyncIndicator } from './lib/syncStatus'
 
 type Tab = 'mine' | 'roster' | 'settings'
 
@@ -15,9 +16,8 @@ function savedName() {
   try { return localStorage.getItem(PROFILE_KEY) ?? '' } catch { return '' }
 }
 
-function StatusPill({ mode }: { mode: LoadedRoster['mode'] }) {
-  const labels = { live: 'Live', cache: 'Saved copy', demo: 'Demo' }
-  return <span className={`status-pill ${mode}`}><i />{labels[mode]}</span>
+function StatusPill({ status }: { status: SyncIndicator }) {
+  return <span className={`status-pill ${status.tone}`}><i />{status.label}</span>
 }
 
 export default function App() {
@@ -29,6 +29,8 @@ export default function App() {
   const [half, setHalf] = useState<'am' | 'pm'>(() => new Date().getHours() < 14 ? 'am' : 'pm')
   const [selectedName, setSelectedName] = useState(savedName)
   const [nameQuery, setNameQuery] = useState('')
+  const [isOnline, setIsOnline] = useState(() => navigator.onLine)
+  const [statusClock, setStatusClock] = useState(() => Date.now())
 
   const refresh = async () => {
     setLoading(true)
@@ -44,6 +46,19 @@ export default function App() {
 
   useEffect(() => { void refresh() }, [])
   useEffect(() => {
+    const updateConnection = () => setIsOnline(navigator.onLine)
+    window.addEventListener('online', updateConnection)
+    window.addEventListener('offline', updateConnection)
+    return () => {
+      window.removeEventListener('online', updateConnection)
+      window.removeEventListener('offline', updateConnection)
+    }
+  }, [])
+  useEffect(() => {
+    const interval = window.setInterval(() => setStatusClock(Date.now()), 60_000)
+    return () => window.clearInterval(interval)
+  }, [])
+  useEffect(() => {
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => undefined)
   }, [])
   useEffect(() => {
@@ -52,6 +67,7 @@ export default function App() {
 
   const people = useMemo(() => loaded ? peopleIn(loaded.payload) : [], [loaded])
   const filteredPeople = people.filter((name) => name.toLocaleLowerCase().includes(nameQuery.toLocaleLowerCase()))
+  const status = loaded ? syncIndicator(loaded.mode, loaded.payload.fetchedAt, isOnline, statusClock) : null
 
   const chooseName = (name: string) => {
     setSelectedName(name)
@@ -77,13 +93,11 @@ export default function App() {
     <div className={`app-shell tab-${tab}`}>
       <header className="topbar">
         <BrandMark />
-        <StatusPill mode={loaded.mode} />
+        {status && <StatusPill status={status} />}
       </header>
 
       <main className="content">
         {tab !== 'settings' && <WeekBar weeks={loaded.payload.weeks} index={weekIndex} onChange={setWeekIndex} />}
-
-        {loaded.error && <div className="notice">Live data was unavailable. Showing {loaded.mode === 'cache' ? 'the last saved roster' : 'demo data'}.</div>}
 
         {tab === 'mine' && (
           <MyWeek
@@ -132,6 +146,16 @@ export default function App() {
             </article>
 
             <article className="settings-card data-card">
+              {(loaded.error || !isOnline) && (
+                <div className={`sync-message ${!isOnline ? 'offline' : ''}`}>
+                  <strong>{!isOnline ? 'You’re offline.' : 'Was unable to sync.'}</strong>
+                  <span>
+                    {loaded.mode === 'cache'
+                      ? ` Showing the saved roster. ${relativeRosterAge(loaded.payload.fetchedAt, statusClock)}.`
+                      : ' Please try again when a connection is available.'}
+                  </span>
+                </div>
+              )}
               <div><span>Data source</span><strong>{loaded.payload.source.name}</strong></div>
               <div><span>Last updated</span><strong>{new Date(loaded.payload.fetchedAt).toLocaleString('en-NZ')}</strong></div>
               <button className="secondary-button" onClick={() => void refresh()}>Sync roster now</button>

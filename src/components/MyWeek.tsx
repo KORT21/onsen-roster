@@ -1,33 +1,34 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { assignmentsFor, findSupervisorSplit, roleMeta, todayIso } from '../lib/roster'
 import type { RosterWeek } from '../types/roster'
 
-const heartParticles = [
-  { dx: -128, dy: -250, rotate: -34, delay: 0, size: 18 },
-  { dx: -70, dy: -338, rotate: 22, delay: 80, size: 14 },
-  { dx: 18, dy: -290, rotate: -14, delay: 150, size: 22 },
-  { dx: 104, dy: -230, rotate: 30, delay: 55, size: 16 },
-  { dx: 188, dy: -142, rotate: 42, delay: 180, size: 19 },
-  { dx: 202, dy: -30, rotate: -24, delay: 95, size: 13 },
-  { dx: 164, dy: 112, rotate: 28, delay: 220, size: 20 },
-  { dx: 80, dy: 224, rotate: -18, delay: 125, size: 15 },
-  { dx: -12, dy: 270, rotate: 24, delay: 250, size: 21 },
-  { dx: -104, dy: 210, rotate: -36, delay: 165, size: 14 },
-  { dx: -154, dy: 106, rotate: 18, delay: 290, size: 18 },
-  { dx: -136, dy: -34, rotate: -28, delay: 110, size: 13 },
-  { dx: 68, dy: -102, rotate: 12, delay: 310, size: 12 },
-  { dx: 24, dy: 104, rotate: -16, delay: 345, size: 16 },
+const floaters = [
+  { left: 8, drift: 28, sway: -12, delay: 90, duration: 3500, size: 27, rotate: -14 },
+  { left: 17, drift: -24, sway: 18, delay: 460, duration: 3900, size: 38, rotate: 12 },
+  { left: 27, drift: 38, sway: -14, delay: 180, duration: 3250, size: 22, rotate: -8 },
+  { left: 36, drift: -30, sway: 22, delay: 630, duration: 4100, size: 32, rotate: 15 },
+  { left: 44, drift: 24, sway: -20, delay: 20, duration: 3750, size: 45, rotate: -10 },
+  { left: 51, drift: -18, sway: 16, delay: 310, duration: 3300, size: 25, rotate: 9 },
+  { left: 58, drift: 34, sway: -18, delay: 720, duration: 4200, size: 34, rotate: -16 },
+  { left: 65, drift: -38, sway: 24, delay: 150, duration: 3600, size: 29, rotate: 13 },
+  { left: 73, drift: 26, sway: -15, delay: 520, duration: 3950, size: 42, rotate: -11 },
+  { left: 83, drift: -28, sway: 19, delay: 250, duration: 3400, size: 23, rotate: 14 },
+  { left: 91, drift: -34, sway: 14, delay: 780, duration: 4050, size: 31, rotate: -12 },
+  { left: 23, drift: 32, sway: -22, delay: 920, duration: 3500, size: 19, rotate: 8 },
+  { left: 48, drift: -25, sway: 20, delay: 1050, duration: 3900, size: 28, rotate: -14 },
+  { left: 77, drift: 30, sway: -16, delay: 980, duration: 3650, size: 20, rotate: 11 },
+  { left: 57, drift: 16, sway: -13, delay: 1180, duration: 3350, size: 18, rotate: -9 },
 ] as const
 
-type HeartParticleStyle = CSSProperties & {
-  '--origin-x': string
-  '--origin-y': string
-  '--heart-dx': string
-  '--heart-dy': string
-  '--heart-rotate': string
-  '--heart-delay': string
-  '--heart-size': string
+type FloaterStyle = CSSProperties & {
+  '--float-left': string
+  '--float-drift': string
+  '--float-sway': string
+  '--float-delay': string
+  '--float-duration': string
+  '--float-size': string
+  '--float-rotate': string
 }
 
 interface MyWeekProps {
@@ -37,17 +38,19 @@ interface MyWeekProps {
   onOpenDay: (dayIndex: number, half: 'am' | 'pm') => void
 }
 
+function hasProfileGift(name: string) {
+  const value = name.trim().toLocaleLowerCase()
+  return value.length === 3 && [112, 105, 112].every((code, index) => value.charCodeAt(index) === code)
+}
+
 export function MyWeek({ week, selectedName, onChooseName, onOpenDay }: MyWeekProps) {
-  const heartButton = useRef<HTMLButtonElement>(null)
-  const [heartBurst, setHeartBurst] = useState<{ id: number; x: number; y: number } | null>(null)
+  const [celebration, setCelebration] = useState<number | null>(null)
 
   useEffect(() => {
-    if (!heartBurst) return
-    const timeout = window.setTimeout(() => {
-      setHeartBurst((current) => current?.id === heartBurst.id ? null : current)
-    }, 2200)
+    if (celebration === null) return
+    const timeout = window.setTimeout(() => setCelebration((current) => current === celebration ? null : current), 5500)
     return () => window.clearTimeout(timeout)
-  }, [heartBurst])
+  }, [celebration])
 
   if (!selectedName) {
     return (
@@ -62,22 +65,13 @@ export function MyWeek({ week, selectedName, onChooseName, onOpenDay }: MyWeekPr
 
   const split = findSupervisorSplit(week)
   const assignments = assignmentsFor(week, selectedName)
-  const isPip = selectedName.trim().toLocaleLowerCase() === 'pip'
+  const hasGift = hasProfileGift(selectedName)
   const byDay = new Map<string, typeof assignments>()
   assignments.forEach((assignment) => {
     const current = byDay.get(assignment.day.date) ?? []
     byDay.set(assignment.day.date, [...current, assignment])
   })
   const today = todayIso()
-
-  const sendPipLove = () => {
-    const rect = heartButton.current?.getBoundingClientRect()
-    setHeartBurst({
-      id: Date.now(),
-      x: rect ? rect.left + rect.width / 2 : window.innerWidth / 2,
-      y: rect ? rect.top + rect.height / 2 : window.innerHeight / 2,
-    })
-  }
 
   return (
     <section className="my-week-page">
@@ -86,11 +80,9 @@ export function MyWeek({ week, selectedName, onChooseName, onOpenDay }: MyWeekPr
           <span className="eyebrow">Your week</span>
           <h2 className="my-week-name">
             {selectedName}
-            {isPip && (
-              <button ref={heartButton} className="pip-heart-button" type="button" aria-label="Send Pip some love" onClick={sendPipLove}>
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 20.4S4 15.35 4 9.45A4.35 4.35 0 0 1 12 7a4.35 4.35 0 0 1 8 2.45c0 5.9-8 10.95-8 10.95Z" />
-                </svg>
+            {hasGift && (
+              <button className="profile-gift" type="button" aria-label="Send some love" onClick={() => setCelebration(Date.now())}>
+                <span aria-hidden="true">💗</span>
               </button>
             )}
           </h2>
@@ -123,23 +115,19 @@ export function MyWeek({ week, selectedName, onChooseName, onOpenDay }: MyWeekPr
           )
         })}
       </div>
-      {heartBurst && (
-        <div className="pip-heart-burst" data-testid="pip-heart-burst" aria-hidden="true">
-          {heartParticles.map((particle, index) => {
-            const style: HeartParticleStyle = {
-              '--origin-x': `${heartBurst.x}px`,
-              '--origin-y': `${heartBurst.y}px`,
-              '--heart-dx': `${particle.dx}px`,
-              '--heart-dy': `${particle.dy}px`,
-              '--heart-rotate': `${particle.rotate}deg`,
-              '--heart-delay': `${particle.delay}ms`,
-              '--heart-size': `${particle.size}px`,
+      {celebration !== null && (
+        <div className="celebration-layer" data-testid="profile-celebration" aria-hidden="true">
+          {floaters.map((floater, index) => {
+            const style: FloaterStyle = {
+              '--float-left': `${floater.left}%`,
+              '--float-drift': `${floater.drift}px`,
+              '--float-sway': `${floater.sway}px`,
+              '--float-delay': `${floater.delay}ms`,
+              '--float-duration': `${floater.duration}ms`,
+              '--float-size': `${floater.size}px`,
+              '--float-rotate': `${floater.rotate}deg`,
             }
-            return (
-              <svg className={`pip-heart-particle tone-${index % 3}`} style={style} viewBox="0 0 24 24" key={`${heartBurst.id}-${index}`}>
-                <path d="M12 20.4S4 15.35 4 9.45A4.35 4.35 0 0 1 12 7a4.35 4.35 0 0 1 8 2.45c0 5.9-8 10.95-8 10.95Z" />
-              </svg>
-            )
+            return <span className="celebration-floater" style={style} key={`${celebration}-${index}`}>💗</span>
           })}
         </div>
       )}
