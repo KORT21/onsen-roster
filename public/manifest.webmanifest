@@ -1,0 +1,18 @@
+{
+  "name": "Onsen Roster",
+  "short_name": "Roster",
+  "description": "A clear, phone-first roster for the Onsen team.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a171f",
+  "theme_color": "#0a171f",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
+
