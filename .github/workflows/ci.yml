@@ -1,4 +1,4 @@
-name: Validate
+name: Validate and deploy
 
 on:
   push:
@@ -21,3 +21,19 @@ jobs:
       - run: npm test
       - run: npm run build
 
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: test-and-build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Deploy production to Netlify
+        run: npx --yes netlify-cli@27.16.2 deploy --prod --build --site "$NETLIFY_SITE_ID" --message "GitHub $GITHUB_SHA"
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
