@@ -50,7 +50,7 @@ button { color: inherit; }
 h1, h2 { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; margin: 0; letter-spacing: -.025em; }
 h1 { font-size: clamp(38px, 8vw, 54px); line-height: .96; }
 h2 { font-size: 30px; }
-.my-week-name { display: inline-flex; align-items: center; gap: 8px; }
+.my-week-name { display: inline-flex; align-items: center; gap: 2px; }
 .profile-gift { width: .96em; height: 1.06em; min-width: 34px; min-height: 38px; margin: -.1em 0; padding: 0; border: 0; display: inline-grid; place-items: center; background: transparent; font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .profile-gift span { display: block; font: .7em/1 Apple Color Emoji, Segoe UI Emoji, sans-serif; filter: drop-shadow(0 2px 5px rgba(236,63,138,.18)); transition: transform .18s ease; }
 .profile-gift:hover span { transform: scale(1.08); }
