@@ -1,5 +1,5 @@
-const CACHE = 'onsen-roster-v1'
-const SHELL = ['/', '/index.html', '/manifest.webmanifest', '/icon.svg']
+const CACHE = 'onsen-roster-v2'
+const SHELL = ['/', '/index.html', '/manifest.webmanifest', '/icon.svg', '/onsen-background.jpg']
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting()))
@@ -17,6 +17,7 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return
   const url = new URL(event.request.url)
   if (url.origin !== self.location.origin) return
+  if (url.pathname.startsWith('/api/')) return
 
   event.respondWith(
     fetch(event.request)
@@ -27,4 +28,3 @@ self.addEventListener('fetch', (event) => {
       .catch(() => caches.match(event.request).then((hit) => hit || caches.match('/'))),
   )
 })
-

@@ -138,7 +138,7 @@ export default function App() {
 
             <article className="privacy-note">
               <strong>Built to be handed over.</strong>
-              <p>The website, Google data service, domain, and GitHub repository can all be owned by the Onsen accounts.</p>
+              <p>The repository, hosting, and domain can all move to Onsen-owned accounts. The roster is read-only and currently uses the permanent public spreadsheet link.</p>
             </article>
           </section>
         )}

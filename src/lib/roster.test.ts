@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { findSupervisorSplit, parseAssignment, peopleIn } from './roster'
+import { findSupervisorSplit, namesInCell, parseAssignment, peopleIn } from './roster'
 import { demoPayload } from '../data/demo'
 
 describe('roster helpers', () => {
@@ -10,6 +10,12 @@ describe('roster helpers', () => {
 
   it('detects training without changing the employee name', () => {
     expect(parseAssignment('Alex *')).toMatchObject({ name: 'Alex', training: true })
+  })
+
+  it('finds every staff member in compound training cells', () => {
+    expect(namesInCell('Yanina* Krysten & Maryke')).toEqual(['Yanina', 'Krysten', 'Maryke'])
+    expect(namesInCell('Jas RC Train Kadek')).toEqual(['Jas', 'Kadek'])
+    expect(namesInCell('no driver needed')).toEqual([])
   })
 
   it('uses the second supervisor row as the afternoon boundary', () => {

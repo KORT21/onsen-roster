@@ -2,6 +2,7 @@ export type RosterCell = string
 
 export interface RosterRow {
   id: string
+  kind?: 'role' | 'note'
   label: string
   cells: RosterCell[]
 }
@@ -17,6 +18,11 @@ export interface RosterWeek {
   start: string
   days: RosterDay[]
   rows: RosterRow[]
+  diagnostics?: {
+    headerRow: number
+    roleRows: number
+    noteRows: number
+  }
 }
 
 export interface RosterPayload {
@@ -25,6 +31,7 @@ export interface RosterPayload {
   source: {
     name: string
     spreadsheetTitle?: string
+    spreadsheetId?: string
   }
   weeks: RosterWeek[]
 }
@@ -33,6 +40,7 @@ export interface PersonAssignment {
   name: string
   note: string
   training: boolean
+  placeholder: boolean
 }
 
 export interface RoleMeta {
@@ -42,4 +50,3 @@ export interface RoleMeta {
   color: string
   half: 'am' | 'pm' | 'both'
 }
-

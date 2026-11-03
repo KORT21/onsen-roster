@@ -20,11 +20,12 @@ function cachedPayload(): RosterPayload | null {
 }
 
 export async function loadRoster(signal?: AbortSignal): Promise<LoadedRoster> {
-  const endpoint = import.meta.env.VITE_ROSTER_API_URL?.trim()
-  if (!endpoint) return { payload: demoPayload, mode: 'demo' }
+  const configured = import.meta.env.VITE_ROSTER_API_URL?.trim()
+  if (configured === 'demo') return { payload: demoPayload, mode: 'demo' }
+  const endpoint = configured || '/api/roster'
 
   try {
-    const url = new URL(endpoint)
+    const url = new URL(endpoint, window.location.origin)
     url.searchParams.set('_', String(Date.now()))
     const response = await fetch(url, { cache: 'no-store', signal })
     if (!response.ok) throw new Error(`Roster service returned ${response.status}`)
@@ -40,4 +41,3 @@ export async function loadRoster(signal?: AbortSignal): Promise<LoadedRoster> {
     return { payload: demoPayload, mode: 'demo', error: message }
   }
 }
-

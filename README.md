@@ -1,28 +1,38 @@
 # Onsen Roster
 
-A focused, phone-first roster for the Onsen team. The application is deliberately
-split into two portable pieces:
+A reliable, read-only staff roster with the same visual language as the public
+[Onsen website](https://www.onsen.co.nz/). It is phone-first, comfortable on
+desktop, installable as a PWA, and designed to move from a personal GitHub
+account to an Onsen-owned account without rewriting the application.
 
-1. **This repository** contains a static React website that can be hosted by any
-   static host.
-2. **Google Apps Script** reads the private Google Sheet under the Google account
-   that owns the roster.
+## What it does
 
-No personal account IDs, spreadsheet IDs, tokens, or hosting credentials belong
-in the repository. That makes it safe to develop in one GitHub account and move
-the project to an Onsen-owned organization later.
+- Downloads the permanent public Google Sheet as an XLSX workbook on the server.
+- Finds roster tabs by their contents, not by fragile tab names.
+- Infers dates from weekday headings and compact names such as `WC 2610`.
+- Preserves duplicate roles, blank-label notes, training markers, and row order.
+- Provides a personal week plus the complete morning/afternoon roster.
+- Keeps the last successful roster in the browser for an offline fallback.
+- Uses sanitized demo data only when live and saved data are unavailable.
 
-## What is included
+The source spreadsheet is public and its link is expected to remain stable, so
+this version needs no Google login, API key, Apps Script, or owner-account access.
 
-- Personal **My week** screen after a staff member chooses their name.
-- Complete roster with week, day, and morning/afternoon navigation.
-- Ordered row model that preserves duplicate labels and unlabeled rows.
-- Exact employee names, including trailing initials such as `Maria S`.
-- Live data, cached offline fallback, and a sanitized demo mode.
-- Installable PWA with a network-first service worker.
-- Google Apps Script reader that discovers `WC d/m` tabs dynamically.
-- Netlify and Vercel deployment configuration.
-- TypeScript parser tests and GitHub Actions validation.
+## Architecture
+
+```text
+Public Google Sheet
+        ↓ XLSX export
+Serverless /api/roster function
+        ↓ resilient workbook normalizer
+Versioned JSON response
+        ↓
+React roster + saved offline copy
+```
+
+`server/roster-core.mjs` contains the provider-neutral reader. The thin files in
+`netlify/functions/` and `api/` adapt it to Netlify and Vercel, keeping the data
+logic portable if hosting changes later.
 
 ## Local development
 
@@ -34,109 +44,89 @@ copy .env.example .env.local
 npm run dev
 ```
 
-With `VITE_ROSTER_API_URL` empty, the app uses fake demo data and is safe to
-share publicly.
-
-Before committing:
+The example environment uses safe demo data because Vite alone does not run the
+serverless function. Remove the override when testing through a Netlify or
+Vercel local runtime.
 
 ```bash
 npm test
 npm run build
+npm run test:live
 ```
 
-## Connect the real Google roster
+`test:live` downloads the current workbook and prints every recognized week
+with parser diagnostics. Run it after spreadsheet layout changes.
 
-Follow [`google-apps-script/README.md`](google-apps-script/README.md). Once the
-Apps Script web app has a final `/exec` URL, set this environment variable in
-the hosting dashboard:
+## Production deployment
 
-```text
-VITE_ROSTER_API_URL=https://script.google.com/macros/s/.../exec
-```
+### Netlify — recommended
 
-Do not put the spreadsheet ID in the frontend. It belongs in Apps Script's
-`SPREADSHEET_ID` Script Property, controlled by the Onsen Google account.
+1. Import this repository into an Onsen-owned Netlify account.
+2. Netlify reads `netlify.toml`, builds the app, and deploys the roster function.
+3. Deploy; no environment variables or Google credentials are required.
+4. Keep the free `*.netlify.app` address or attach an Onsen-owned domain.
 
-## Deploy
+Netlify is the practical free production default. Vercel is also configured,
+but its free Hobby plan is intended for personal, non-commercial projects.
 
-### Netlify — recommended default
-
-1. Import the GitHub repository into the Onsen Netlify account.
-2. Netlify reads `netlify.toml`; the build is `npm run build` and output is
-   `dist`.
-3. Add `VITE_ROSTER_API_URL` under environment variables.
-4. Deploy. A free `*.netlify.app` address is provided automatically.
-5. Optionally connect a domain or subdomain Onsen already owns.
-
-### Vercel — supported, but not the free production recommendation
-
-1. Import the repository into the Onsen Vercel account.
-2. Vercel detects Vite and reads `vercel.json`.
-3. Add `VITE_ROSTER_API_URL` under environment variables.
-4. Deploy. A free `*.vercel.app` address is provided automatically.
-5. Optionally connect an existing Onsen domain.
-
-Both providers can host this project. However, as checked in November 2026,
-Vercel restricts its free Hobby tier to personal, non-commercial use. An
-Onsen-operated staff roster should therefore use Netlify Free or a paid Vercel
-plan. The host contains no roster backend, so moving between providers is simply
-a new import plus the one environment variable.
-
-> Hosting and SSL can be free. Registering a brand-new custom domain normally
-> costs money; attaching a domain Onsen already owns does not require a paid
-> hosting plan. A provider URL such as `onsen-roster.netlify.app` is free.
+A provider address is free. A new custom domain normally costs money; connecting
+a domain Onsen already owns does not require paid hosting.
 
 ## Transfer to Onsen ownership
 
-When the new accounts are ready:
+1. Create or choose the Onsen GitHub account or organization.
+2. Transfer the repository in GitHub settings, or push it into a new Onsen repo.
+3. Import that repository into the Onsen Netlify account.
+4. Attach the chosen Onsen domain or subdomain.
+5. Verify the live roster, then remove any personal-account deployment.
 
-1. Create an Onsen-owned GitHub organization or GitHub account.
-2. Transfer the repository in **GitHub → Settings → General → Transfer** or push
-   a mirror into a fresh Onsen-owned repository.
-3. Import that repository into the Onsen-owned Netlify or Vercel account.
-4. Deploy the Apps Script project from the Onsen Google account and set
-   `SPREADSHEET_ID` there.
-5. Add the Apps Script `/exec` URL to the host as `VITE_ROSTER_API_URL`.
-6. Point the chosen domain at the new hosting project.
-7. Remove the old personal deployment after the new site is verified.
+The public sheet ID is intentionally in the server code because the sheet itself
+is public and its permanent link is the app's data source. If the sheet becomes
+private, replace the fetch layer with authenticated Google access; the frontend
+contract does not need to change.
 
-Git history, issues, and pull requests can stay intact when GitHub's repository
-transfer feature is used.
+## Workbook tolerance
+
+The normalizer accepts the variations already present in the live workbook:
+
+- changing and compact week-tab names;
+- month boundaries such as `October/November`;
+- unlabeled operational notes and duplicate role labels;
+- stray backticks and inconsistent whitespace;
+- training, start/finish, and driver notes inside cells;
+- placeholders such as `to fill`, `Spa Side`, and `no driver needed`.
+
+It rejects tabs without a seven-day heading and at least five recognizable
+roster roles, reducing the chance of publishing a notes or archive tab.
 
 ## Data contract
 
-The frontend consumes versioned JSON:
+`/api/roster` returns versioned JSON. Rows keep a stable sheet-row ID and remain
+ordered arrays so duplicate labels cannot overwrite each other.
 
 ```json
 {
   "version": 1,
   "fetchedAt": "2026-11-03T00:00:00.000Z",
-  "source": { "name": "Onsen Google Sheet" },
-  "weeks": [
-    {
-      "id": "sheet-id",
-      "label": "WC 2/11",
-      "start": "2026-11-02",
-      "days": [{ "date": "2026-11-02", "shortLabel": "Mon" }],
-      "rows": [{ "id": "row-id", "label": "Runner 1 7:30am", "cells": ["Alex"] }]
-    }
-  ]
+  "source": { "name": "Onsen public Google Sheet" },
+  "weeks": [{
+    "id": "sheet-id",
+    "label": "WC 211",
+    "start": "2026-11-02",
+    "days": [{ "date": "2026-11-02", "shortLabel": "Mon" }],
+    "rows": [{ "id": "sheet-id-r12", "kind": "role", "label": "Runner 1", "cells": ["Alex"] }]
+  }]
 }
 ```
 
-Rows remain arrays and each one has a stable sheet-row ID. Duplicate role labels
-therefore cannot overwrite each other.
+## Security and scope
 
-## Security
-
-- Never commit `.env`, spreadsheet IDs, tokens, or account credentials.
-- A public Apps Script endpoint exposes the returned roster data to anyone who
-  obtains its URL, even though the spreadsheet itself remains private.
-- Before a staff-wide production launch, decide whether roster privacy requires
-  Google Workspace sign-in or another authentication layer.
-- Keep write operations out of the public roster endpoint. This first version is
-  deliberately read-only.
+- The app is read-only and never writes to the spreadsheet.
+- Do not put private credentials or account tokens in the repository.
+- Roster data is currently public because the source spreadsheet is public.
+- Authentication can be added later if Onsen makes the sheet private.
+- Feature upgrades are deferred until this reliable baseline is checked by staff.
 
 ## License
 
-MIT. This makes future maintenance, transfer, and modification straightforward.
+MIT, so future Onsen maintainers can transfer and modify it freely.

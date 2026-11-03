@@ -4,8 +4,8 @@
   "description": "A clear, phone-first roster for the Onsen team.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a171f",
-  "theme_color": "#0a171f",
+  "background_color": "#0e1a20",
+  "theme_color": "#0e1a20",
   "icons": [
     {
       "src": "/icon.svg",
@@ -15,4 +15,3 @@
     }
   ]
 }
-
