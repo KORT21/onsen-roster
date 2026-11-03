@@ -133,6 +133,31 @@ h2 { font-size: 30px; }
   .my-day:last-child { grid-column: 1 / -1; }
 }
 
+@media (max-width: 639px) {
+  .app-shell.tab-mine { height: 100dvh; min-height: 0; overflow: hidden; padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
+  .tab-mine .content { height: calc(100dvh - 150px - env(safe-area-inset-bottom)); min-height: 0; overflow: hidden; padding: 10px 14px 8px; display: flex; flex-direction: column; }
+  .tab-mine .week-bar { flex: 0 0 auto; margin-bottom: 10px; border-radius: 14px; }
+  .tab-mine .week-bar button { min-height: 50px; }
+  .tab-mine .week-bar div { gap: 2px; }
+  .tab-mine .week-bar strong { font-size: 16px; }
+  .tab-mine .week-bar span { font-size: 11px; }
+  .my-week-page { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .tab-mine .section-heading { flex: 0 0 auto; align-items: center; margin-bottom: 8px; }
+  .tab-mine .eyebrow { margin-bottom: 2px; font-size: 9px; }
+  .tab-mine .section-heading h2 { font-size: 34px; line-height: .9; }
+  .tab-mine .count-pill { padding: 4px 8px; font-size: 10px; }
+  .tab-mine .my-week-list { flex: 1; min-height: 0; grid-template-rows: repeat(7, minmax(0, 1fr)); gap: 6px; }
+  .tab-mine .my-day { height: 100%; min-height: 0; grid-template-columns: 42px 3px 1fr 14px; gap: 10px; padding: 3px 10px 3px 8px; border-radius: 12px; }
+  .tab-mine .my-day > i { width: 3px; height: 30px; }
+  .tab-mine .date-tile { width: 42px; height: min(42px, 6dvh); min-height: 34px; border-radius: 9px; }
+  .tab-mine .date-tile span { font-size: 8px; }
+  .tab-mine .date-tile strong { font-size: 18px; }
+  .tab-mine .my-day-copy { gap: 2px; }
+  .tab-mine .my-day-copy strong { font-size: 12px; }
+  .tab-mine .my-day-copy span { font-size: 10px; }
+  .tab-mine .my-day > b { font-size: 18px; }
+}
+
 @media (min-width: 960px) {
   .app-shell { width: 100%; max-width: none; margin: 0; padding: 0 0 0 224px; }
   .topbar { height: 86px; padding: 15px 34px; }

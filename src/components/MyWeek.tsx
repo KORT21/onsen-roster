@@ -30,7 +30,7 @@ export function MyWeek({ week, selectedName, onChooseName, onOpenDay }: MyWeekPr
   const today = todayIso()
 
   return (
-    <section>
+    <section className="my-week-page">
       <div className="section-heading">
         <div>
           <span className="eyebrow">Your week</span>

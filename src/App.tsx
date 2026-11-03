@@ -73,7 +73,7 @@ export default function App() {
   }
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell tab-${tab}`}>
       <header className="topbar">
         <BrandMark />
         <StatusPill mode={loaded.mode} />
