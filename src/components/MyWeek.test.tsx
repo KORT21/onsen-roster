@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import { demoPayload } from '../data/demo'
 import { MyWeek } from './MyWeek'
@@ -13,10 +13,15 @@ describe('MyWeek', () => {
     }
     const { rerender } = render(<MyWeek {...sharedProps} selectedName="Pip" />)
 
-    expect(screen.getByRole('img', { name: 'Love for Pip' })).toBeInTheDocument()
+    const heart = screen.getByRole('button', { name: 'Send Pip some love' })
+    expect(heart).toBeInTheDocument()
+
+    fireEvent.click(heart)
+
+    expect(screen.getByTestId('pip-heart-burst')).toBeInTheDocument()
 
     rerender(<MyWeek {...sharedProps} selectedName="Alex" />)
 
-    expect(screen.queryByRole('img', { name: 'Love for Pip' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Send Pip some love' })).not.toBeInTheDocument()
   })
 })

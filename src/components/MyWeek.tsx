@@ -1,5 +1,34 @@
+import { useEffect, useRef, useState } from 'react'
+import type { CSSProperties } from 'react'
 import { assignmentsFor, findSupervisorSplit, roleMeta, todayIso } from '../lib/roster'
 import type { RosterWeek } from '../types/roster'
+
+const heartParticles = [
+  { dx: -128, dy: -250, rotate: -34, delay: 0, size: 18 },
+  { dx: -70, dy: -338, rotate: 22, delay: 80, size: 14 },
+  { dx: 18, dy: -290, rotate: -14, delay: 150, size: 22 },
+  { dx: 104, dy: -230, rotate: 30, delay: 55, size: 16 },
+  { dx: 188, dy: -142, rotate: 42, delay: 180, size: 19 },
+  { dx: 202, dy: -30, rotate: -24, delay: 95, size: 13 },
+  { dx: 164, dy: 112, rotate: 28, delay: 220, size: 20 },
+  { dx: 80, dy: 224, rotate: -18, delay: 125, size: 15 },
+  { dx: -12, dy: 270, rotate: 24, delay: 250, size: 21 },
+  { dx: -104, dy: 210, rotate: -36, delay: 165, size: 14 },
+  { dx: -154, dy: 106, rotate: 18, delay: 290, size: 18 },
+  { dx: -136, dy: -34, rotate: -28, delay: 110, size: 13 },
+  { dx: 68, dy: -102, rotate: 12, delay: 310, size: 12 },
+  { dx: 24, dy: 104, rotate: -16, delay: 345, size: 16 },
+] as const
+
+type HeartParticleStyle = CSSProperties & {
+  '--origin-x': string
+  '--origin-y': string
+  '--heart-dx': string
+  '--heart-dy': string
+  '--heart-rotate': string
+  '--heart-delay': string
+  '--heart-size': string
+}
 
 interface MyWeekProps {
   week: RosterWeek
@@ -9,6 +38,17 @@ interface MyWeekProps {
 }
 
 export function MyWeek({ week, selectedName, onChooseName, onOpenDay }: MyWeekProps) {
+  const heartButton = useRef<HTMLButtonElement>(null)
+  const [heartBurst, setHeartBurst] = useState<{ id: number; x: number; y: number } | null>(null)
+
+  useEffect(() => {
+    if (!heartBurst) return
+    const timeout = window.setTimeout(() => {
+      setHeartBurst((current) => current?.id === heartBurst.id ? null : current)
+    }, 2200)
+    return () => window.clearTimeout(timeout)
+  }, [heartBurst])
+
   if (!selectedName) {
     return (
       <section className="empty-panel">
@@ -30,6 +70,15 @@ export function MyWeek({ week, selectedName, onChooseName, onOpenDay }: MyWeekPr
   })
   const today = todayIso()
 
+  const sendPipLove = () => {
+    const rect = heartButton.current?.getBoundingClientRect()
+    setHeartBurst({
+      id: Date.now(),
+      x: rect ? rect.left + rect.width / 2 : window.innerWidth / 2,
+      y: rect ? rect.top + rect.height / 2 : window.innerHeight / 2,
+    })
+  }
+
   return (
     <section className="my-week-page">
       <div className="section-heading">
@@ -38,9 +87,11 @@ export function MyWeek({ week, selectedName, onChooseName, onOpenDay }: MyWeekPr
           <h2 className="my-week-name">
             {selectedName}
             {isPip && (
-              <svg className="pip-heart" viewBox="0 0 24 24" role="img" aria-label="Love for Pip">
-                <path d="M12 20.4S4 15.35 4 9.45A4.35 4.35 0 0 1 12 7a4.35 4.35 0 0 1 8 2.45c0 5.9-8 10.95-8 10.95Z" />
-              </svg>
+              <button ref={heartButton} className="pip-heart-button" type="button" aria-label="Send Pip some love" onClick={sendPipLove}>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 20.4S4 15.35 4 9.45A4.35 4.35 0 0 1 12 7a4.35 4.35 0 0 1 8 2.45c0 5.9-8 10.95-8 10.95Z" />
+                </svg>
+              </button>
             )}
           </h2>
         </div>
@@ -72,6 +123,26 @@ export function MyWeek({ week, selectedName, onChooseName, onOpenDay }: MyWeekPr
           )
         })}
       </div>
+      {heartBurst && (
+        <div className="pip-heart-burst" data-testid="pip-heart-burst" aria-hidden="true">
+          {heartParticles.map((particle, index) => {
+            const style: HeartParticleStyle = {
+              '--origin-x': `${heartBurst.x}px`,
+              '--origin-y': `${heartBurst.y}px`,
+              '--heart-dx': `${particle.dx}px`,
+              '--heart-dy': `${particle.dy}px`,
+              '--heart-rotate': `${particle.rotate}deg`,
+              '--heart-delay': `${particle.delay}ms`,
+              '--heart-size': `${particle.size}px`,
+            }
+            return (
+              <svg className={`pip-heart-particle tone-${index % 3}`} style={style} viewBox="0 0 24 24" key={`${heartBurst.id}-${index}`}>
+                <path d="M12 20.4S4 15.35 4 9.45A4.35 4.35 0 0 1 12 7a4.35 4.35 0 0 1 8 2.45c0 5.9-8 10.95-8 10.95Z" />
+              </svg>
+            )
+          })}
+        </div>
+      )}
     </section>
   )
 }
