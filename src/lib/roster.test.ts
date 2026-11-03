@@ -1,8 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { findSupervisorSplit, namesInCell, parseAssignment, peopleIn } from './roster'
+import { findSupervisorSplit, isoWeekNumber, namesInCell, parseAssignment, peopleIn } from './roster'
 import { demoPayload } from '../data/demo'
 
 describe('roster helpers', () => {
+  it('uses ISO calendar week numbers instead of spreadsheet tab labels', () => {
+    expect(isoWeekNumber('2026-11-02')).toBe(45)
+    expect(isoWeekNumber('2027-01-01')).toBe(53)
+    expect(isoWeekNumber('2027-01-04')).toBe(1)
+  })
+
   it('keeps a trailing initial as part of the employee identity', () => {
     expect(parseAssignment('Jasmine O  last day')?.name).toBe('Jasmine O')
     expect(parseAssignment('Maria S')?.name).toBe('Maria S')

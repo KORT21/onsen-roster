@@ -99,6 +99,15 @@ export function todayIso(): string {
   return new Date().toLocaleDateString('en-CA', { timeZone: 'Pacific/Auckland' })
 }
 
+export function isoWeekNumber(isoDate: string): number {
+  const [year, month, dayOfMonth] = isoDate.split('-').map(Number)
+  const date = new Date(Date.UTC(year, month - 1, dayOfMonth))
+  const day = date.getUTCDay() || 7
+  date.setUTCDate(date.getUTCDate() + 4 - day)
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1))
+  return Math.ceil((((date.getTime() - yearStart.getTime()) / 86_400_000) + 1) / 7)
+}
+
 export function assignmentsFor(week: RosterWeek, name: string) {
   const key = name.toLocaleLowerCase()
   return week.days.flatMap((day, dayIndex) =>

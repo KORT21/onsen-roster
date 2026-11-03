@@ -1,4 +1,5 @@
 import type { RosterWeek } from '../types/roster'
+import { isoWeekNumber } from '../lib/roster'
 
 interface WeekBarProps {
   weeks: RosterWeek[]
@@ -19,7 +20,7 @@ export function WeekBar({ weeks, index, onChange }: WeekBarProps) {
     <div className="week-bar">
       <button aria-label="Previous week" disabled={index === 0} onClick={() => onChange(index - 1)}>‹</button>
       <div>
-        <strong>{week.label}</strong>
+        <strong>Week {isoWeekNumber(week.days[0].date)}</strong>
         <span>{weekRange(week)}</span>
       </div>
       <button aria-label="Next week" disabled={index === weeks.length - 1} onClick={() => onChange(index + 1)}>›</button>

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { BrandMark } from './components/BrandMark'
 import { FullRoster } from './components/FullRoster'
 import { MyWeek } from './components/MyWeek'
+import { NavIcon } from './components/NavIcon'
 import { WeekBar } from './components/WeekBar'
 import { loadRoster, type LoadedRoster } from './lib/api'
 import { closestWeekIndex, peopleIn, todayIso } from './lib/roster'
@@ -146,13 +147,13 @@ export default function App() {
 
       <nav className="bottom-nav" aria-label="Primary navigation">
         <button className={tab === 'mine' ? 'active' : ''} onClick={() => setTab('mine')}>
-          <span>⌂</span><small>My week</small>
+          <NavIcon name="user" /><small>My week</small>
         </button>
         <button className={tab === 'roster' ? 'active' : ''} onClick={() => setTab('roster')}>
-          <span>▦</span><small>Roster</small>
+          <NavIcon name="calendar" /><small>Roster</small>
         </button>
         <button className={tab === 'settings' ? 'active' : ''} onClick={() => setTab('settings')}>
-          <span>⚙</span><small>Settings</small>
+          <NavIcon name="settings" /><small>Settings</small>
         </button>
       </nav>
     </div>
