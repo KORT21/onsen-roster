@@ -1,5 +1,14 @@
-const CACHE = 'onsen-roster-v2'
-const SHELL = ['/', '/index.html', '/manifest.webmanifest', '/icon.svg', '/onsen-background.jpg']
+const CACHE = 'onsen-roster-v3'
+const SHELL = [
+  '/',
+  '/index.html',
+  '/manifest.webmanifest',
+  '/icon.svg',
+  '/apple-touch-icon.png',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/onsen-background.jpg',
+]
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting()))
