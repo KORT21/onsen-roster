@@ -1,4 +1,4 @@
-const CACHE = 'onsen-roster-v4'
+const CACHE = 'onsen-roster-v5'
 const SHELL = [
   '/',
   '/index.html',

@@ -17,8 +17,8 @@
 }
 
 * { box-sizing: border-box; }
-html { background: var(--bg); }
-body { margin: 0; min-width: 320px; min-height: 100vh; background-color: var(--bg); background-image: linear-gradient(rgba(10, 22, 30, .9), rgba(14, 26, 32, .96)), url('/onsen-background.jpg'); background-position: center top; background-size: cover; background-attachment: fixed; }
+html { background: var(--bg); overscroll-behavior-y: none; }
+body { margin: 0; min-width: 320px; min-height: 100vh; overscroll-behavior-y: none; background-color: var(--bg); background-image: linear-gradient(rgba(10, 22, 30, .9), rgba(14, 26, 32, .96)), url('/onsen-background.jpg'); background-position: center top; background-size: cover; background-attachment: fixed; }
 button, input { font: inherit; }
 button { color: inherit; }
 
@@ -39,7 +39,7 @@ button { color: inherit; }
 .week-bar button { min-height: 64px; border: 0; background: transparent; font-size: 28px; color: var(--gold); cursor: pointer; }
 .week-bar button:disabled { color: #49606a; cursor: default; }
 .week-bar div { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.week-bar strong { font: 600 18px/1 'Cormorant Garamond', serif; letter-spacing: .04em; text-transform: uppercase; }
+.week-bar strong { font: 600 18px/1 'Cormorant Garamond', serif; letter-spacing: .04em; text-transform: none; font-variant-numeric: lining-nums tabular-nums; font-feature-settings: 'lnum' 1, 'tnum' 1; }
 .week-bar span { color: var(--muted); font-size: 12px; }
 .notice { padding: 12px 14px; margin: -12px 0 22px; border: 1px solid rgba(224,180,102,.35); border-radius: 12px; color: #e0c797; background: rgba(224,180,102,.08); font-size: 12px; }
 
@@ -137,7 +137,7 @@ h2 { font-size: 30px; }
   body { background-attachment: scroll; }
   .topbar { height: calc(60px + env(safe-area-inset-top)); padding: calc(8px + env(safe-area-inset-top)) 16px 7px; background: var(--bg); backdrop-filter: none; -webkit-backdrop-filter: none; }
   .tab-mine .topbar { position: relative; }
-  .app-shell.tab-mine { height: 100dvh; min-height: 0; overflow: hidden; padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
+  .app-shell.tab-mine { position: fixed; inset: 0; width: 100%; height: 100dvh; min-height: 0; overflow: hidden; padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
   .tab-mine .content { height: calc(100dvh - 132px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); min-height: 0; overflow: hidden; padding: 10px 14px 8px; display: flex; flex-direction: column; }
   .tab-mine .week-bar { flex: 0 0 auto; margin-bottom: 10px; border-radius: 14px; }
   .tab-mine .week-bar button { min-height: 50px; }
