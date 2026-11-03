@@ -62,6 +62,11 @@ export function parseAssignment(value: string): PersonAssignment | null {
   }
 }
 
+export function hasRosteredPerson(value: string): boolean {
+  const assignment = parseAssignment(value)
+  return Boolean(assignment?.name && !assignment.placeholder)
+}
+
 export function namesInCell(value: string): string[] {
   const raw = value.trim()
   if (!raw || PLACEHOLDER_RE.test(raw)) return []

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { findSupervisorSplit, formatDayNotes, isoWeekNumber, namesInCell, parseAssignment, peopleIn } from './roster'
+import { findSupervisorSplit, formatDayNotes, hasRosteredPerson, isoWeekNumber, namesInCell, parseAssignment, peopleIn } from './roster'
 import { demoPayload } from '../data/demo'
 
 describe('roster helpers', () => {
@@ -16,6 +16,15 @@ describe('roster helpers', () => {
 
   it('detects training without changing the employee name', () => {
     expect(parseAssignment('Alex *')).toMatchObject({ name: 'Alex', training: true })
+  })
+
+  it('only treats roles with an assigned person as rostered', () => {
+    expect(hasRosteredPerson('Pip')).toBe(true)
+    expect(hasRosteredPerson('Jasmine *')).toBe(true)
+    expect(hasRosteredPerson('')).toBe(false)
+    expect(hasRosteredPerson('—')).toBe(false)
+    expect(hasRosteredPerson('TBC')).toBe(false)
+    expect(hasRosteredPerson('to fill')).toBe(false)
   })
 
   it('finds every staff member in compound training cells', () => {
