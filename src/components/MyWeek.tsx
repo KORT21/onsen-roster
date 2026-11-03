@@ -32,6 +32,7 @@ type FloaterStyle = CSSProperties & {
   '--float-left': string
   '--float-drift': string
   '--float-sway': string
+  '--float-sway-duration': string
   '--float-delay': string
   '--float-duration': string
   '--float-size': string
@@ -129,12 +130,17 @@ export function MyWeek({ week, selectedName, onChooseName, onOpenDay }: MyWeekPr
               '--float-left': `${floater.left}%`,
               '--float-drift': `${floater.drift}px`,
               '--float-sway': `${floater.sway}px`,
+              '--float-sway-duration': `${820 + (index % 6) * 115}ms`,
               '--float-delay': `${floater.delay}ms`,
               '--float-duration': `${floater.duration}ms`,
               '--float-size': `${floater.size}px`,
               '--float-rotate': `${floater.rotate}deg`,
             }
-            return <span className="celebration-floater" style={style} key={`${celebration}-${index}`}>💗</span>
+            return (
+              <span className="celebration-floater" style={style} key={`${celebration}-${index}`}>
+                <span>💗</span>
+              </span>
+            )
           })}
         </div>
       )}

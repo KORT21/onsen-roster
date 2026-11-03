@@ -52,18 +52,25 @@ h1 { font-size: clamp(38px, 8vw, 54px); line-height: .96; }
 h2 { font-size: 30px; }
 .my-week-name { display: inline-flex; align-items: center; gap: 8px; }
 .profile-gift { width: .96em; height: 1.06em; min-width: 34px; min-height: 38px; margin: -.1em 0; padding: 0; border: 0; display: inline-grid; place-items: center; background: transparent; font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.profile-gift span { display: block; font: .82em/1 Apple Color Emoji, Segoe UI Emoji, sans-serif; filter: drop-shadow(0 2px 5px rgba(236,63,138,.18)); transition: transform .18s ease; }
+.profile-gift span { display: block; font: .7em/1 Apple Color Emoji, Segoe UI Emoji, sans-serif; filter: drop-shadow(0 2px 5px rgba(236,63,138,.18)); transition: transform .18s ease; }
 .profile-gift:hover span { transform: scale(1.08); }
 .profile-gift:active span { transform: scale(.84); }
 .profile-gift:focus-visible { outline: 2px solid rgba(236,90,151,.7); outline-offset: -3px; border-radius: 50%; }
 .celebration-layer { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 80; }
-.celebration-floater { position: absolute; left: var(--float-left); bottom: -60px; width: var(--float-size); height: var(--float-size); display: grid; place-items: center; opacity: 0; font: var(--float-size)/1 Apple Color Emoji, Segoe UI Emoji, sans-serif; filter: drop-shadow(0 4px 8px rgba(205,36,110,.2)); will-change: transform, opacity; animation: heart-balloon var(--float-duration) cubic-bezier(.22,.65,.3,1) var(--float-delay) both; }
-@keyframes heart-balloon {
-  0% { opacity: 0; transform: translate3d(0, 45px, 0) rotate(0deg) scale(.4); }
-  8% { opacity: 1; }
-  48% { opacity: 1; transform: translate3d(var(--float-sway), -48dvh, 0) rotate(calc(var(--float-rotate) * -.45)) scale(1.04); }
-  85% { opacity: .98; }
-  100% { opacity: 0; transform: translate3d(var(--float-drift), calc(-100dvh - 90px), 0) rotate(var(--float-rotate)) scale(.9); }
+.celebration-floater { position: absolute; left: var(--float-left); bottom: -70px; width: var(--float-size); height: var(--float-size); display: grid; place-items: center; opacity: 0; will-change: transform, opacity; animation: heart-rise var(--float-duration) linear var(--float-delay) both, heart-visibility var(--float-duration) linear var(--float-delay) both; }
+.celebration-floater > span { display: block; font: var(--float-size)/1 Apple Color Emoji, Segoe UI Emoji, sans-serif; filter: drop-shadow(0 4px 8px rgba(205,36,110,.2)); will-change: transform; animation: heart-sway var(--float-sway-duration) ease-in-out var(--float-delay) infinite alternate both; }
+@keyframes heart-rise {
+  from { transform: translate3d(0, 35px, 0); }
+  to { transform: translate3d(var(--float-drift), calc(-100dvh - 160px), 0); }
+}
+@keyframes heart-visibility {
+  0%, 3% { opacity: 0; }
+  9%, 90% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes heart-sway {
+  from { transform: translate3d(calc(var(--float-sway) * -1), 0, 0) rotate(calc(var(--float-rotate) * -.55)) scale(.92); }
+  to { transform: translate3d(var(--float-sway), 0, 0) rotate(var(--float-rotate)) scale(1.06); }
 }
 .count-pill { color: var(--muted); border: 1px solid var(--line); border-radius: 99px; padding: 6px 10px; font-size: 11px; }
 
